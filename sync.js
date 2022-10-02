@@ -18,6 +18,18 @@ const listFund = async () => {
     .reduce((acc, curr) => ({ ...acc, ...curr }), {});
 };
 
+const toInt = (value) => parseInt(value, 10);
+
+const parseBuyDate = (transactionDate) => {
+  var date = transactionDate.split(" ")[0];
+  var parts = date.split("/");
+  return new Date(
+    toInt(parts[2]),
+    toInt(parts[0]) - 1,
+    toInt(parts[1])
+  ).toISOString();
+};
+
 const parseBuyDetails = async () => {
   const details = await csv().fromFile(process.env.FILE_PATH);
   return details
@@ -25,7 +37,7 @@ const parseBuyDetails = async () => {
     .map((item) => ({
       fund: item["商品名称"].split("-")[1],
       amount: parseFloat(item["金额（元）"]),
-      date: item["交易创建时间"].split(" ")[0],
+      date: parseBuyDate(item["交易创建时间"]),
     }));
 };
 
